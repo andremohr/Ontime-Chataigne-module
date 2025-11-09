@@ -477,8 +477,10 @@
         "Show Secondary Source": {
           "type": "Enum",
           "options": {
-            "External":"external",
-            "Aux Timer":"aux",
+            "Secondary":"secondary",
+            "Aux Timer 1":"aux1",
+            "Aux Timer 2":"aux2",
+            "Aux Timer 3":"aux3",
             "Off":"off"
           },
           "dependency": {
@@ -497,8 +499,7 @@
           "type": "Integer",
           "default": 1,
           "min": 1,
-          "max": 10,
-          "readOnly": true
+          "max": 3
         },
         "Action": {
           "type": "Enum",

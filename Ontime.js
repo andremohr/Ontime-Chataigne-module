@@ -141,7 +141,7 @@ function setEventData(eventObject, payload) {
     eventObject.cue.set(payload.cue);
     eventObject.warning.set(millisToFloat(payload.timeWarning));
     eventObject.danger.set(millisToFloat(payload.timeDanger));
-    //TODO: add custom data
+    //TODO: add custom data, flag, countToEnd
   } else {
     eventObject.id.set('');
     eventObject.title.set('');
@@ -156,7 +156,7 @@ function setEventData(eventObject, payload) {
     eventObject.cue.set('');
     eventObject.warning.set(0);
     eventObject.danger.set(0);
-    //TODO: add custom data
+    //TODO: add custom data, flag, countToEnd
   }
 }
 
@@ -320,10 +320,10 @@ function wsMessageReceived(message) {
 function generalAction(action, addtime, offsetMode) {
   if (action == 'addtime') {
     if (addtime > 0) {
-      local.send('{"tag":"addtime", "payload":{"add":' + addtime + '}}');
+      local.send('{"tag":"addtime", "payload":{"add":' + addtime * 1000 + '}}');
     } else if (addtime < 0) {
       addtime = addtime * -1;
-      local.send('{"tag":"addtime", "payload":{"remove":' + addtime + '}}');
+      local.send('{"tag":"addtime", "payload":{"remove":' + addtime * 1000 + '}}');
     }
   } else if (action == 'roll' || action == 'stop' || action == 'pause' || action == 'reload') {
     local.send('{"tag":"' + action + '"}');
@@ -364,7 +364,7 @@ function messageAction(
   } else if (action == 'blackoutTimer') {
     local.send('{"tag":"message", "payload":{"timer":{"blackout":' + blackoutTimer + '}}}');
   } else if (action == 'setExternalMessage') {
-    local.send('{"tag":"message", "payload":{"external":{"text":"' + setExternalMessage + '"}}}');
+    local.send('{"tag":"message", "payload":{"secondary":"' + setExternalMessage + '"}}');
   } else if (action == 'showSecondarySource') {
     local.send('{"tag":"message", "payload":{"timer":{"secondarySource":"' + showSecondarySource + '"}}}');
   }
@@ -373,10 +373,10 @@ function messageAction(
 function auxTimer(index, action, duration, direction, addtime) {
   if (action == 'set') {
     local.send(
-      '{"tag":"auxtimer", "payload":{"' + index + '":{"duration":' + parseInt(duration) + ',"direction":"' + direction + '"}}}',
+      '{"tag":"auxtimer", "payload":{"' + index + '":{"duration":' + parseInt(duration) * 1000 + ', "direction":"' + direction + '"}}}',
     );
   } else if (action == "addtime") {
-    local.send('{"tag":"auxtimer", "payload":{"' + index + '":{"addtime":' + parseInt(addtime) +'}}}');
+    local.send('{"tag":"auxtimer", "payload":{"' + index + '":{"addtime":' + parseInt(addtime) * 1000 +'}}}');
   } else if (action == 'start' || action == 'pause' || action == 'stop') {
     local.send('{"tag":"auxtimer", "payload":{"' + index + '":"' + action + '"}}');
   }
@@ -407,15 +407,15 @@ function changeEvent(
     title: ['title', title],
     note: ['note', note],
     cue: ['cue', cue],
-    timeStart: ['timeStart', parseInt(timeStart)],
+    timeStart: ['timeStart', parseInt(timeStart) * 1000],
     linkStart: ['linkStart', linkStart],
-    timeEnd: ['timeEnd', parseInt(timeEnd)],
-    duration: ['duration', parseInt(duration)],
+    timeEnd: ['timeEnd', parseInt(timeEnd) * 1000],
+    duration: ['duration', parseInt(duration) * 1000],
     skip: ['skip', skip],
     timerType: ['timerType', timerType],
     endAction: ['endAction', endAction],
-    timeWarning: ['timeWarning', parseInt(timeWarning)],
-    timeDanger: ['timeDanger', parseInt(timeDanger)],
+    timeWarning: ['timeWarning', parseInt(timeWarning) * 1000],
+    timeDanger: ['timeDanger', parseInt(timeDanger) * 1000],
     selectColour: ['colour', selectColour == 'none' ? '' : selectColour],
     pickColour: [
       'colour',
