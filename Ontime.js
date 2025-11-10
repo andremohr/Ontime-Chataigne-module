@@ -95,7 +95,23 @@ function millisToFloat(millis) {
     return 0;
   }
 }
-
+/**
+ *
+ * @param {number} millis
+ * @returns {float}
+ */
+function floatToMillis(value) {
+  if (value) {
+    var millis = value;
+    if (local.parameters.increasedPrecision.get() == false) {
+      return trunc(value) * 1000;
+    } else {
+      return value * 1000;
+    }
+  } else {
+    return 0;
+  }
+}
 /**
  * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/named-color css colours}
  * @param {string} value
@@ -136,12 +152,14 @@ function setEventData(eventObject, payload) {
     eventObject.endAction.setData(payload.endAction);
     eventObject.timerType.setData(payload.timerType);
     eventObject.skip.set(payload.skip);
+    eventObject.flag.set(payload.flag);
+    eventObject.countToEnd.set(payload.countToEnd);
     eventObject.note.set(payload.note);
     eventObject.colour.set(cssColors(payload.colour));
     eventObject.cue.set(payload.cue);
     eventObject.warning.set(millisToFloat(payload.timeWarning));
     eventObject.danger.set(millisToFloat(payload.timeDanger));
-    //TODO: add custom data, flag, countToEnd
+    //TODO: add custom data
   } else {
     eventObject.id.set('');
     eventObject.title.set('');
@@ -151,12 +169,14 @@ function setEventData(eventObject, payload) {
     eventObject.endAction.setData('');
     eventObject.timerType.setData('');
     eventObject.skip.set(false);
+    eventObject.flag.set(false);
+    eventObject.countToEnd.set(false);
     eventObject.note.set('');
     eventObject.colour.set(0x00000000);
     eventObject.cue.set('');
     eventObject.warning.set(0);
     eventObject.danger.set(0);
-    //TODO: add custom data, flag, countToEnd
+    //TODO: add custom data
   }
 }
 
@@ -319,12 +339,7 @@ function wsMessageReceived(message) {
 
 function generalAction(action, addtime, offsetMode) {
   if (action == 'addtime') {
-    if (addtime > 0) {
-      local.send('{"tag":"addtime", "payload":{"add":' + addtime * 1000 + '}}');
-    } else if (addtime < 0) {
-      addtime = addtime * -1;
-      local.send('{"tag":"addtime", "payload":{"remove":' + addtime * 1000 + '}}');
-    }
+      local.send('{"tag":"addtime", "payload":{"add":' + floatToMillis(addtime) + '}}');
   } else if (action == 'roll' || action == 'stop' || action == 'pause' || action == 'reload') {
     local.send('{"tag":"' + action + '"}');
   } else if (action == 'startNext') {
@@ -372,11 +387,10 @@ function messageAction(
 
 function auxTimer(index, action, duration, direction, addtime) {
   if (action == 'set') {
-    local.send(
-      '{"tag":"auxtimer", "payload":{"' + index + '":{"duration":' + parseInt(duration) * 1000 + ', "direction":"' + direction + '"}}}',
-    );
+    local.send( '{"tag":"auxtimer", "payload":{"' + index + '":{"duration":' + floatToMillis(duration) + '}}}' );
+    local.send( '{"tag":"auxtimer", "payload":{"' + index + '":{"direction":"' + direction + '"}}}' );
   } else if (action == "addtime") {
-    local.send('{"tag":"auxtimer", "payload":{"' + index + '":{"addtime":' + parseInt(addtime) * 1000 +'}}}');
+    local.send('{"tag":"auxtimer", "payload":{"' + index + '":{"addtime":' + floatToMillis(addtime) +'}}}');
   } else if (action == 'start' || action == 'pause' || action == 'stop') {
     local.send('{"tag":"auxtimer", "payload":{"' + index + '":"' + action + '"}}');
   }
@@ -392,8 +406,10 @@ function changeEvent(
   timeEnd,
   duration,
   skip,
+  flag,
   timerType,
   endAction,
+  countToEnd,
   timeWarning,
   timeDanger,
   selectColour,
@@ -407,15 +423,17 @@ function changeEvent(
     title: ['title', title],
     note: ['note', note],
     cue: ['cue', cue],
-    timeStart: ['timeStart', parseInt(timeStart) * 1000],
+    timeStart: ['timeStart', floatToMillis(timeStart)],
     linkStart: ['linkStart', linkStart],
-    timeEnd: ['timeEnd', parseInt(timeEnd) * 1000],
-    duration: ['duration', parseInt(duration) * 1000],
+    timeEnd: ['timeEnd', floatToMillis(timeEnd)],
+    duration: ['duration', floatToMillis(duration)],
     skip: ['skip', skip],
+    flag: ['flag', flag],
     timerType: ['timerType', timerType],
     endAction: ['endAction', endAction],
-    timeWarning: ['timeWarning', parseInt(timeWarning) * 1000],
-    timeDanger: ['timeDanger', parseInt(timeDanger) * 1000],
+    countToEnd: ['countToEnd', countToEnd],
+    timeWarning: ['timeWarning', floatToMillis(timeWarning)],
+    timeDanger: ['timeDanger', floatToMillis(timeDanger)],
     selectColour: ['colour', selectColour == 'none' ? '' : selectColour],
     pickColour: [
       'colour',

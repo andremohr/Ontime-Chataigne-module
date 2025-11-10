@@ -3,8 +3,8 @@
   "type": "WebSocket Client",
   "path": "Software",
 
-  "version": "0.5.0",
-  "description": "Module for interacting with ontime",
+  "version": "0.6.0",
+  "description": "!Breaking changes, will not work with v3!\n\nModule for interacting with Ontime v4",
   "url": "https://github.com/alex-Arc/Ontime-Chataigne-module",
   "downloadURL": "https://github.com/alex-Arc/Ontime-Chataigne-module/archive/refs/heads/main.zip",
 
@@ -163,6 +163,8 @@
       "Start": { "type": "Float", "ui": "time", "readOnly": true },
       "End": { "type": "Float", "ui": "time", "readOnly": true },
       "Duration": { "type": "Float", "ui": "time", "readOnly": true },
+      "Count to end": { "type": "Boolean", "readOnly": true },
+      "Flag": { "type": "Boolean", "readOnly": true },
       "Skip": { "type": "Boolean", "readOnly": true },
       "Danger": { "type": "Float", "ui": "time", "readOnly": true },
       "Warning": { "type": "Float", "ui": "time", "readOnly": true },
@@ -183,8 +185,8 @@
           " ": "",
           "Count down": "count-down",
           "Count up": "count-up",
-          "Time to end": "time-to-end",
-          "Clock": "clock"
+          "Clock": "clock",
+          "None": "none"
         },
         "readOnly": true
       }
@@ -200,6 +202,8 @@
       "Start": { "type": "Float", "ui": "time", "readOnly": true },
       "End": { "type": "Float", "ui": "time", "readOnly": true },
       "Duration": { "type": "Float", "ui": "time", "readOnly": true },
+      "Count to end": { "type": "Boolean", "readOnly": true },
+      "Flag": { "type": "Boolean", "readOnly": true },
       "Skip": { "type": "Boolean", "readOnly": true },
       "Danger": { "type": "Float", "ui": "time", "readOnly": true },
       "Warning": { "type": "Float", "ui": "time", "readOnly": true },
@@ -220,8 +224,8 @@
           " ": "",
           "Count down": "count-down",
           "Count up": "count-up",
-          "Time to end": "time-to-end",
-          "Clock": "clock"
+          "Clock": "clock",
+          "None": "none"
         },
         "readOnly": true
       }
@@ -237,6 +241,8 @@
       "Start": { "type": "Float", "ui": "time", "readOnly": true },
       "End": { "type": "Float", "ui": "time", "readOnly": true },
       "Duration": { "type": "Float", "ui": "time", "readOnly": true },
+      "Count to end": { "type": "Boolean", "readOnly": true },
+      "Flag": { "type": "Boolean", "readOnly": true },
       "Skip": { "type": "Boolean", "readOnly": true },
       "Danger": { "type": "Float", "ui": "time", "readOnly": true },
       "Warning": { "type": "Float", "ui": "time", "readOnly": true },
@@ -257,8 +263,8 @@
           " ": "",
           "Count down": "count-down",
           "Count up": "count-up",
-          "Time to end": "time-to-end",
-          "Clock": "clock"
+          "Clock": "clock",
+          "None": "none"
         },
         "readOnly": true
       }
@@ -571,9 +577,11 @@
             "Duration": "duration",
             "Timer type": "timerType",
             "End action": "endAction",
+            "Count to End": "countToEnd",
             "Warning time": "timeWarning",
             "Danger time": "timeDanger",
             "Skip event": "skip",
+            "Flag event": "flag",
             "Select cue colour": "selectColour",
             "Pick cue colour": "pickColour",
             "Write cue colour": "writeColour",
@@ -666,13 +674,22 @@
             "action": "show"
           }
         },
+        "Flag event": {
+          "type": "Boolean",
+          "dependency": {
+            "source": "targetChange",
+            "value": "flag",
+            "check": "equals",
+            "action": "show"
+          }
+        },
         "Timer type": {
           "type": "Enum",
           "options": {
             "Count down": "count-down",
             "Count up": "count-up",
-            "Time to end": "time-to-end",
-            "Clock": "clock"
+            "Clock": "clock",
+            "None": "none"
           },
           "dependency": {
             "source": "targetChange",
@@ -685,13 +702,21 @@
           "type": "Enum",
           "options": {
             "None": "none",
-            "Stop": "stop",
             "Load next": "load-next",
             "Play next": "play-next"
           },
           "dependency": {
             "source": "targetChange",
             "value": "endAction",
+            "check": "equals",
+            "action": "show"
+          }
+        },
+        "Count to end": {
+          "type": "Boolean",
+          "dependency": {
+            "source": "targetChange",
+            "value": "countToEnd",
             "check": "equals",
             "action": "show"
           }
